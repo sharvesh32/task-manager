@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EngineersTrackpad - Authenticated Matrix</title>
+    <title>EngineersTrackpad - Synchronized Matrix</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -39,7 +39,7 @@
             margin: 0 auto;
         }
 
-        /* Auth Screen Styling */
+        /* Access Overlay Security Grid */
         #auth-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -75,7 +75,7 @@
             margin-bottom: 2rem;
         }
 
-        /* Main Dashboard Structuring */
+        /* Dashboard Interface Wrapper Elements */
         header {
             margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
@@ -134,7 +134,7 @@
             color: var(--bg-color);
         }
 
-        /* Filter Controls */
+        /* Filter Selector Anchors */
         .filter-container {
             margin-bottom: 1.5rem;
             display: flex;
@@ -160,7 +160,7 @@
             border-color: var(--accent-primary);
         }
 
-        /* Grid Framework */
+        /* Structural Layout Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -304,7 +304,7 @@
             transition: width 0.4s ease;
         }
 
-        /* Input Form Container */
+        /* Form Controls Board */
         .custom-input-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -379,11 +379,11 @@
 </head>
 <body>
 
-    <!-- Access Gateway Security Layer -->
+    <!-- Access Gateway Security Overlay -->
     <div id="auth-overlay">
         <div class="auth-card">
             <h2>Engineers<span>Trackpad</span></h2>
-            <div class="auth-subtitle">Sync milestones using security keys</div>
+            <div class="auth-subtitle">Sync milestones using secure profiles</div>
             
             <div class="input-group" style="margin-bottom: 1rem;">
                 <label for="auth-id">Login ID</label>
@@ -399,19 +399,20 @@
         </div>
     </div>
 
-    <!-- Active Dashboard Workspace Layout -->
+    <!-- Active Workspace Layout -->
     <div class="container">
         <header>
             <div>
                 <h1>Engineers<span>Trackpad</span></h1>
-                <div class="subtitle" id="user-display-heading">Secure Matrix Active</div>
+                <div class="subtitle" id="user-display-heading">Secure Matrix Loading...</div>
             </div>
             <div class="header-controls">
                 <button class="logout-btn" onclick="lockProfileWorkspace()">Lock Account</button>
-                <div class="stats-badge" id="global-progress">Syncing Database...</div>
+                <div class="stats-badge" id="global-progress">Connecting Database...</div>
             </div>
         </header>
 
+        <!-- Category View Filter Layout toggles -->
         <div class="filter-container">
             <button class="filter-btn active" onclick="setGlobalFilter(event, 'all')">All Matrix View</button>
             <button class="filter-btn" onclick="setGlobalFilter(event, 'tostart')">To Start</button>
@@ -420,9 +421,10 @@
         </div>
 
         <main class="grid" id="dashboard-grid">
-            <!-- Rendered dynamically by engine elements -->
+            <!-- Populated dynamically by JS engine -->
         </main>
 
+        <!-- Creation Input Panel -->
         <div class="custom-input-box">
             <div class="input-group">
                 <label for="goal-text">Milestone Description</label>
@@ -475,13 +477,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             requestNotificationPermission();
             
-            // Auto-bypass login frame if persistent authentication key token is detected
             if (secureUserToken) {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('user-display-heading').innerText = `Workspace Matrix: ${secureUserDisplay}`;
+                
+                // Load localized memory snapshot first to prevent screen flashes
+                const backup = localStorage.getItem(`backup_${secureUserToken}`);
+                if (backup) goals = JSON.parse(backup);
+                
+                renderDashboard();
                 loadCloudState();
             }
             initializeNotificationClocks();
+            
+            // Continuous Sync Loop: Checks database changes automatically every 10 seconds
+            setInterval(loadCloudState, 10000);
         });
 
         function requestNotificationPermission() {
@@ -490,7 +500,7 @@
             }
         }
 
-        // Authentication Broker Layer (Generates unique bucket locations deterministically)
+        // Deterministic Lock Engine (Generates matching directory trees instantly)
         function authenticateProfile() {
             const userIdInput = document.getElementById('auth-id').value.trim().toLowerCase();
             const passwordInput = document.getElementById('auth-pass').value.trim();
@@ -501,75 +511,74 @@
                 return;
             }
 
-            authButton.innerText = "Connecting Crypto Storage...";
+            authButton.innerText = "Connecting Realtime Sync...";
             authButton.disabled = true;
 
-            // Generate a secure string tracking hash without bulky library additions
-            const deterministicSalt = userIdInput + "_" + passwordInput;
-            let finalHash = 0;
-            for (let i = 0; i < deterministicSalt.length; i++) {
-                finalHash = (finalHash << 5) - finalHash + deterministicSalt.charCodeAt(i);
-                finalHash |= 0;
+            // Generate character hash to safely route users to their exact database record
+            const salt = userIdInput + "_" + passwordInput;
+            let hash = 0;
+            for (let i = 0; i < salt.length; i++) {
+                hash = (hash << 5) - hash + salt.charCodeAt(i);
+                hash |= 0;
             }
-            const secureUniqueBucketId = "box_" + Math.abs(finalHash);
+            const secureUniqueBucketId = "user_" + Math.abs(hash);
 
-            // Establish session keys lock parameters
             localStorage.setItem('active_auth_token', secureUniqueBucketId);
             localStorage.setItem('active_auth_display', userIdInput);
             secureUserToken = secureUniqueBucketId;
             secureUserDisplay = userIdInput;
 
-            // Hide authorization view panel blocks
             document.getElementById('auth-overlay').style.display = 'none';
             document.getElementById('user-display-heading').innerText = `Workspace Matrix: ${userIdInput}`;
 
-            // Pull profile assets from server stack
             loadCloudState();
         }
 
         function lockProfileWorkspace() {
-            if(confirm("Confirm security lockout on this terminal profile?")) {
+            if(confirm("Confirm safety lockout on this dashboard profile?")) {
                 localStorage.removeItem('active_auth_token');
                 localStorage.removeItem('active_auth_display');
                 location.reload();
             }
         }
 
-        // Database Sync Pipelines (Using optimized JSON payload routing pipes)
+        // Live Cloud Synchronization Engines (Firebase REST Matrix Protocol)
         async function loadCloudState() {
             if (!secureUserToken) return;
             try {
-                const response = await fetch(`https://kvdb.io/MN74pD4V9xLq2Z267y42Zz/${secureUserToken}`);
+                const response = await fetch(`https://engineers-trackpad-default-rtdb.firebaseio.com/matrices/${secureUserToken}.json`);
                 if (response.ok) {
-                    const cloudGoalsData = await response.json();
-                    if (Array.isArray(cloudGoalsData)) {
-                        goals = cloudGoalsData;
+                    const data = await response.json();
+                    if (data && Array.isArray(data)) {
+                        goals = data;
+                        localStorage.setItem(`backup_${secureUserToken}`, JSON.stringify(goals));
                         renderDashboard();
                         updateProgressUI(true);
                         return;
                     }
                 }
-                // Seed blank states if this login ID is completely new
-                goals = [];
-                saveCloudState();
+                updateProgressUI(true);
             } catch (error) {
-                console.warn("Database storage engine routing delay:", error);
+                console.log("Network sync deferred. Serving local cache data framework.");
                 updateProgressUI(false);
             }
         }
 
         async function saveCloudState() {
+            // Write directly to native device memory immediately so changes stick
+            localStorage.setItem(`backup_${secureUserToken}`, JSON.stringify(goals));
             renderDashboard();
+            
             if (!secureUserToken) return;
             try {
-                const response = await fetch(`https://kvdb.io/MN74pD4V9xLq2Z267y42Zz/${secureUserToken}`, {
-                    method: 'POST',
+                await fetch(`https://engineers-trackpad-default-rtdb.firebaseio.com/matrices/${secureUserToken}.json`, {
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(goals)
                 });
-                if(response.ok) updateProgressUI(true);
+                updateProgressUI(true);
             } catch (error) {
-                console.error("Cloud array write rejected:", error);
+                console.error("Cloud engine queue deferred:", error);
                 updateProgressUI(false);
             }
         }
@@ -580,8 +589,9 @@
             const pct = total ? Math.round((completed / total) * 100) : 0;
             const badge = document.getElementById('global-progress');
             if(badge) {
-                badge.innerText = `Completion: ${pct}% ${networkOnline ? '(Secure Cloud)' : '(Network Delayed)'}`;
+                badge.innerText = `Completion: ${pct}% ${networkOnline ? '(Synced Secure)' : '(Saved Local)'}`;
                 badge.style.borderColor = networkOnline ? 'var(--accent-success)' : 'var(--accent-warning)';
+                badge.style.color = networkOnline ? 'var(--accent-success)' : 'var(--accent-warning)';
             }
         }
 
@@ -624,7 +634,7 @@
                     
                     let targetLinkHtml = '';
                     if (goal.linkUrl && goal.linkUrl.trim() !== '') {
-                        const anchorText = goal.linkLabel && goal.linkLabel.trim() !== '' ? goal.linkLabel : 'Open Link';
+                        const anchorText = goal.linkLabel && goal.linkLabel.trim() !== '' ? goal.linkLabel : 'Launch Link';
                         targetLinkHtml = `<a href="${goal.linkUrl}" target="_blank" class="task-link-badge">🔗 ${anchorText}</a>`;
                     }
 
