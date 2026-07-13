@@ -356,10 +356,10 @@
 
         <!-- Global Filters Across Execution States -->
         <div class="filter-container">
-            <button class="filter-btn active" onclick="setGlobalFilter('all')">All Matrix View</button>
-            <button class="filter-btn" onclick="setGlobalFilter('tostart')">To Start</button>
-            <button class="filter-btn" onclick="setGlobalFilter('inprogress')">In Progress</button>
-            <button class="filter-btn" onclick="setGlobalFilter('completed')">Completed</button>
+            <button class="filter-btn active" onclick="setGlobalFilter(event, 'all')">All Matrix View</button>
+            <button class="filter-btn" onclick="setGlobalFilter(event, 'tostart')">To Start</button>
+            <button class="filter-btn" onclick="setGlobalFilter(event, 'inprogress')">In Progress</button>
+            <button class="filter-btn" onclick="setGlobalFilter(event, 'completed')">Completed</button>
         </div>
 
         <!-- Dashboard Matrices -->
@@ -405,11 +405,9 @@
     </div>
 
     <script>
-        // Data Structure Layer: Instant Local Caching Configuration
         let currentFilter = 'all';
         let goals = [];
 
-        // Fallback default engineering seed milestones
         const defaultSeedGoals = [
             { id: 1, horizon: 'daily', text: '30 mins structural C/Python codebase logic exercises', state: 'inprogress', deadline: null, notified: false, linkLabel: 'GitHub', linkUrl: 'https://github.com' },
             { id: 2, horizon: 'weekly', text: 'Execute NPTEL / BS Course week assignment targets', state: 'inprogress', deadline: null, notified: false, linkLabel: 'NPTEL Portal', linkUrl: 'https://nptel.ac.in' },
@@ -426,7 +424,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             requestNotificationPermission();
             
-            // CRITICAL HARD BACKUP LOAD: Pulls instantly from local storage cache on refresh
             const storedBackup = localStorage.getItem('engineers_trackpad_local_backup');
             if (storedBackup) {
                 try {
@@ -439,7 +436,6 @@
                 localStorage.setItem('engineers_trackpad_local_backup', JSON.stringify(goals));
             }
             
-            // Build visual matrices instantly
             renderDashboard();
             initializeNotificationClocks();
         });
@@ -450,17 +446,16 @@
             }
         }
 
-        // State Engine Execution Pipeline: Updates screen & local disk array concurrently
         function saveState() {
             localStorage.setItem('engineers_trackpad_local_backup', JSON.stringify(goals));
             renderDashboard();
         }
 
-        function setGlobalFilter(filterValue) {
+        function setGlobalFilter(e, filterValue) {
             currentFilter = filterValue;
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            if (event && event.target) {
-                event.target.classList.add('active');
+            if (e && e.target) {
+                e.target.classList.add('active');
             }
             renderDashboard();
         }
@@ -594,7 +589,6 @@
             }
         }
 
-        // Cross-Device Sync Matrix Exporter Tools
         function linkDeviceKey() {
             const actionType = prompt("MANAGE TRACKPAD DATA STATE\nType 'EXPORT' to copy your database sync text code string.\nType 'IMPORT' to replace current list elements with an external sync key string:");
             
@@ -627,7 +621,6 @@
         }
 
         function initializeNotificationClocks() {
-            // Calendar deadline checker loop (10s intervals)
             setInterval(() => {
                 const now = Date.now();
                 let stateMutated = false;
@@ -641,7 +634,6 @@
                 if (stateMutated) saveState();
             }, 10000);
 
-            // Micro-Interval Task Loop: 2-Hour alerts for 'Daily Grind' vectors in progress
             setInterval(() => {
                 const activeDailyTasks = goals.filter(g => g.horizon === 'daily' && g.state === 'inprogress');
                 if (activeDailyTasks.length > 0) {
